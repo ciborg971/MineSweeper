@@ -15,12 +15,8 @@ import android.view.View;
  * Created by crylog on 30/03/16.
  */
 public class cv extends View {
-    private Rect square;
-    private boolean touches[];
-    private float touchx[];
-    private float touchy[];
-    private boolean touch;
-    private Paint black, grey, white;
+    private boolean init = false;
+    private Mine [] [] MineArr = new Mine [10] [10];
     private int width;
     public cv (Context cont, AttributeSet att)
     {
@@ -37,14 +33,47 @@ public class cv extends View {
         canvas.drawPaint(pt);
         pt.setColor(Color.WHITE);
         pt.setStyle(Paint.Style.STROKE);
-        int offset = width/10;
-        Log.d("CV","" + width);
+        if(!init) {
+            int offset = width / 10;
+            for (int x = 0; x < 10; x++)
+                for (int y = 0; y < 10; y++) {
+                    Mine mn = new Mine();
+                    mn.Rect(x * offset, y * offset, x * offset + offset, y * offset + offset);
+                    MineArr[x][y] = mn;
+                }
+            init = true;
+        }
         for(int x = 0; x < 10; x++)
-            for(int y = 0; y < 10; y++)
-                canvas.drawRect(x*offset,y*offset,x*offset+offset,y*offset+offset,pt);
+            for(int y = 0; y < 10; y++) {
+                if(MineArr[x][y].cover){
+                    pt.setColor(Color.WHITE);
+                    pt.setStyle(Paint.Style.STROKE);
+                }else{
+                    pt.setColor(Color.GRAY);
+                    pt.setStyle(Paint.Style.FILL);
+                }
+
+                canvas.drawRect(MineArr[x][y].left, MineArr[x][y].top, MineArr[x][y].right, MineArr[x][y].bottom, pt);
+            }
+
     }
     public boolean onTouchEvent(MotionEvent event)
     {
+        if(event.getActionMasked() == MotionEvent.ACTION_DOWN){
+            float touchx = event.getX();
+            float touchy = event.getY();
+            for (int x = 0; x < 10; x++)
+                for(int y = 0; y < 10; y++)
+                {
+                    if(MineArr[x][y].cover){
+                        if (((MineArr[x][y].left < touchx)&&(touchx < MineArr[x][y].right))&& ((MineArr[x][y].top < touchy)&&(touchy < MineArr[x][y].bottom))){
+                            MineArr[x][y].cover = false;
+                        }
+                    }
+                }
+            invalidate();
+            return true;
+        }
         return super.onTouchEvent(event);
     }
     @Override
@@ -55,13 +84,5 @@ public class cv extends View {
     }
     private void init()
     {
-        black = new Paint(Paint.ANTI_ALIAS_FLAG);
-        grey = new Paint(Paint.ANTI_ALIAS_FLAG);
-        white = new Paint(Paint.ANTI_ALIAS_FLAG);
-        black.setColor(0xff000000);
-        grey.setColor(0xff888888);
-        white.setColor(0xffffffff);
-
-
     }
 }

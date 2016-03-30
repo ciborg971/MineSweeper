@@ -15,7 +15,6 @@ public class MainActivity extends AppCompatActivity {
         cv custom_v = (cv)findViewById(R.id.cv);
         Display display = getWindowManager().getDefaultDisplay();
         int width = display.getWidth();
-        Log.d("MainActivity","poney"+ width);
         custom_v.setLayoutParams(new LinearLayout.LayoutParams(width, width));
     }
 }
