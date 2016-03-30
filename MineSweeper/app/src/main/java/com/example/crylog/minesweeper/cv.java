@@ -45,6 +45,7 @@ public class cv extends View {
                     MineArr[x][y] = mn;
                 }
             Put_Mine(20);
+            Set_number();
             init = true;
         }
         for(int x = 0; x < 10; x++)
@@ -64,6 +65,19 @@ public class cv extends View {
                         pt.setColor(Color.GRAY);
                         pt.setStyle(Paint.Style.FILL);
                         canvas.drawRect(MineArr[x][y].left, MineArr[x][y].top, MineArr[x][y].right, MineArr[x][y].bottom, pt);
+                        if(MineArr[x][y].number == 1)
+                            pt.setColor(Color.BLUE);
+
+                        if(MineArr[x][y].number == 2)
+                            pt.setColor(Color.GREEN);
+
+                        if(MineArr[x][y].number == 3)
+                            pt.setColor(Color.YELLOW);
+
+                        if(MineArr[x][y].number >= 4)
+                            pt.setColor(Color.RED);
+
+                        canvas.drawText(String.valueOf(MineArr[x][y].number), 0, 1, MineArr[x][y].left + offset / 2, MineArr[x][y].top + offset / 2, pt);
                     }
                 }
             }
@@ -107,8 +121,28 @@ public class cv extends View {
             if(!MineArr[x][y].mined)
             {
                 MineArr[x][y].mined = true;
+
                 nmb--;
             }
         }
+    }
+    private void Set_number()
+    {
+        for(int x = 0; x < 10; x++)
+            for(int y = 0; y < 10; y++)
+                MineArr[x][y].number = xy_to_int(x-1,y-1) + xy_to_int(x+1,y-1) + xy_to_int(x,y-1)+ xy_to_int(x-1,y) + xy_to_int(x+1,y) + xy_to_int(x-1,y+1) + xy_to_int(x,y+1) + xy_to_int(x+1,y+1);
+    }
+    private int xy_to_int(int x, int y)
+    {
+        if((x < 0)||(y < 0))
+            return 0;
+
+        if((x >= 10)||(y >= 10))
+            return 0;
+
+        if(!MineArr[x][y].mined)
+            return 0;
+
+        return 1;
     }
 }
