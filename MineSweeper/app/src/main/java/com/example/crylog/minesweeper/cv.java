@@ -21,6 +21,8 @@ public class cv extends View {
     private Mine [] [] MineArr = new Mine [10] [10];
     private int width;
     private float offset;
+    public int nb_mine = 20;
+    public int mine_uncovered = 0;
     public cv (Context cont, AttributeSet att)
     {
         super(cont, att);
@@ -60,7 +62,8 @@ public class cv extends View {
                         pt.setStyle(Paint.Style.FILL);
                         canvas.drawRect(MineArr[x][y].left, MineArr[x][y].top, MineArr[x][y].right, MineArr[x][y].bottom, pt);
                         pt.setColor(Color.BLACK);
-                        canvas.drawText("M",0,1,MineArr[x][y].left+offset/2,MineArr[x][y].top+offset/2,pt);
+                        canvas.drawText("M", 0, 1, MineArr[x][y].left + offset / 2, MineArr[x][y].top + offset / 2, pt);
+                        loose();
                     } else {
                         pt.setColor(Color.GRAY);
                         pt.setStyle(Paint.Style.FILL);
@@ -144,5 +147,21 @@ public class cv extends View {
             return 0;
 
         return 1;
+    }
+    private void loose()
+    {
+        for(int x = 0; x < 10; x++)
+            for(int y = 0; y < 10; y++)
+                MineArr[x][y].cover = false;
+
+        invalidate();
+    }
+    public void reset()
+    {
+        for(int x = 0; x < 10; x++)
+            for(int y = 0; y < 10; y++)
+                MineArr[x][y].cover = true;
+
+        init = false;
     }
 }
