@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 
-import java.util.jar.Attributes;
 
 /**
  * Created by crylog on 30/03/16.
@@ -12,15 +11,14 @@ import java.util.jar.Attributes;
 public class cv extends View {
     int time;
     int number_of_mine;
-    public cv(Context context, Attributes as)
+    public cv (Context cont, AttributeSet att)
     {
-        super(context, (AttributeSet) as);
+        super(cont,att);
         init();
     }
     private void init()
     {
         time = 99;
         number_of_mine = 20;
-
     }
 }
