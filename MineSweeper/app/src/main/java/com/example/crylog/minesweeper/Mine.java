@@ -10,6 +10,7 @@ public class Mine {
     float right;
     float top;
     float bottom;
+    boolean mined;
 
     public void Rect(float left,float top,float right,float bottom)
     {

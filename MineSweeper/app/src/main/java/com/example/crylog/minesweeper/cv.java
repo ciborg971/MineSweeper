@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.Random;
+
 
 /**
  * Created by crylog on 30/03/16.
@@ -18,6 +20,7 @@ public class cv extends View {
     private boolean init = false;
     private Mine [] [] MineArr = new Mine [10] [10];
     private int width;
+    private float offset;
     public cv (Context cont, AttributeSet att)
     {
         super(cont, att);
@@ -34,13 +37,14 @@ public class cv extends View {
         pt.setColor(Color.WHITE);
         pt.setStyle(Paint.Style.STROKE);
         if(!init) {
-            int offset = width / 10;
+            offset = width / 10;
             for (int x = 0; x < 10; x++)
                 for (int y = 0; y < 10; y++) {
                     Mine mn = new Mine();
                     mn.Rect(x * offset, y * offset, x * offset + offset, y * offset + offset);
                     MineArr[x][y] = mn;
                 }
+            Put_Mine(20);
             init = true;
         }
         for(int x = 0; x < 10; x++)
@@ -48,12 +52,20 @@ public class cv extends View {
                 if(MineArr[x][y].cover){
                     pt.setColor(Color.WHITE);
                     pt.setStyle(Paint.Style.STROKE);
+                    canvas.drawRect(MineArr[x][y].left, MineArr[x][y].top, MineArr[x][y].right, MineArr[x][y].bottom, pt);
                 }else{
-                    pt.setColor(Color.GRAY);
-                    pt.setStyle(Paint.Style.FILL);
+                    if(MineArr[x][y].mined){
+                        pt.setColor(Color.RED);
+                        pt.setStyle(Paint.Style.FILL);
+                        canvas.drawRect(MineArr[x][y].left, MineArr[x][y].top, MineArr[x][y].right, MineArr[x][y].bottom, pt);
+                        pt.setColor(Color.BLACK);
+                        canvas.drawText("M",0,1,MineArr[x][y].left+offset/2,MineArr[x][y].top+offset/2,pt);
+                    } else {
+                        pt.setColor(Color.GRAY);
+                        pt.setStyle(Paint.Style.FILL);
+                        canvas.drawRect(MineArr[x][y].left, MineArr[x][y].top, MineArr[x][y].right, MineArr[x][y].bottom, pt);
+                    }
                 }
-
-                canvas.drawRect(MineArr[x][y].left, MineArr[x][y].top, MineArr[x][y].right, MineArr[x][y].bottom, pt);
             }
 
     }
@@ -84,5 +96,19 @@ public class cv extends View {
     }
     private void init()
     {
+    }
+
+    private void Put_Mine(int nmb)
+    {
+        Random rnd = new Random();
+        while(nmb != 0) {
+            int x = rnd.nextInt(9);
+            int y = rnd.nextInt(9);
+            if(!MineArr[x][y].mined)
+            {
+                MineArr[x][y].mined = true;
+                nmb--;
+            }
+        }
     }
 }
