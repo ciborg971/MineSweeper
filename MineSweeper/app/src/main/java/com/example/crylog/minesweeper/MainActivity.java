@@ -1,8 +1,12 @@
 package com.example.crylog.minesweeper;
 
 import android.app.ActionBar;
+import android.graphics.Color;
+import android.os.Debug;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -15,7 +19,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         cv custom_v = (cv)findViewById(R.id.cv);
-        int width = custom_v.getWidth();
-        custom_v.setLayoutParams(new LinearLayout.LayoutParams(width,width));
+        Display display = getWindowManager().getDefaultDisplay();
+        int width = display.getWidth();
+        Log.d("MainActivity","poney"+ width);
+        custom_v.setLayoutParams(new LinearLayout.LayoutParams(width, width));
     }
 }
