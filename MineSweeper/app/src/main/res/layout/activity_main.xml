@@ -16,11 +16,15 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="example"/>
+            android:id="@+id/tv1"
+
+            />
 
         <Button
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:id="@+id/cover"
+            android:text="Uncover mode"/>
 
         <Button
             android:layout_width="wrap_content"
@@ -32,7 +36,9 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="example"/>
+            android:text="example"
+            android:id="@+id/tv2"
+            />
 
 
 

@@ -4,11 +4,10 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.Random;
 
@@ -22,15 +21,15 @@ public class cv extends View {
     private int width;
     private float offset;
     public int nb_mine = 20;
-    public int mine_uncovered = 0;
+    public int mine_uncovered;
+    public boolean mode = true;
     public cv (Context cont, AttributeSet att)
     {
         super(cont, att);
         init();
     }
     @Override
-    public void onDraw(Canvas canvas)
-    {
+    public void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         Paint pt = new Paint();
         pt.setStyle(Paint.Style.FILL);
@@ -38,54 +37,69 @@ public class cv extends View {
         canvas.drawPaint(pt);
         pt.setColor(Color.WHITE);
         pt.setStyle(Paint.Style.STROKE);
-        if(!init) {
+        if (!init) {
             offset = width / 10;
+            Mine mn;
+            pt.setColor(Color.WHITE);
+            pt.setStyle(Paint.Style.STROKE);
             for (int x = 0; x < 10; x++)
                 for (int y = 0; y < 10; y++) {
-                    Mine mn = new Mine();
+                    mn = new Mine();
                     mn.Rect(x * offset, y * offset, x * offset + offset, y * offset + offset);
                     MineArr[x][y] = mn;
+                    canvas.drawRect(MineArr[x][y].left, MineArr[x][y].top, MineArr[x][y].right, MineArr[x][y].bottom, pt);
                 }
-            Put_Mine(20);
+            Put_Mine(nb_mine);
             Set_number();
             init = true;
         }
-        for(int x = 0; x < 10; x++)
-            for(int y = 0; y < 10; y++) {
-                if(MineArr[x][y].cover){
+        for (int x = 0; x < 10; x++)
+            for (int y = 0; y < 10; y++) {
+                if (MineArr[x][y].cover&&!MineArr[x][y].spotted) {
                     pt.setColor(Color.WHITE);
                     pt.setStyle(Paint.Style.STROKE);
                     canvas.drawRect(MineArr[x][y].left, MineArr[x][y].top, MineArr[x][y].right, MineArr[x][y].bottom, pt);
-                }else{
-                    if(MineArr[x][y].mined){
-                        pt.setColor(Color.RED);
+                }
+                if (MineArr[x][y].spotted&&!MineArr[x][y].cover) {
+                        MineArr[x][y].cover = false;
+                        pt.setColor(Color.YELLOW);
                         pt.setStyle(Paint.Style.FILL);
                         canvas.drawRect(MineArr[x][y].left, MineArr[x][y].top, MineArr[x][y].right, MineArr[x][y].bottom, pt);
-                        pt.setColor(Color.BLACK);
-                        canvas.drawText("M", 0, 1, MineArr[x][y].left + offset / 2, MineArr[x][y].top + offset / 2, pt);
-                        loose();
-                    } else {
-                        pt.setColor(Color.GRAY);
-                        pt.setStyle(Paint.Style.FILL);
-                        canvas.drawRect(MineArr[x][y].left, MineArr[x][y].top, MineArr[x][y].right, MineArr[x][y].bottom, pt);
-                        if(MineArr[x][y].number == 1)
-                            pt.setColor(Color.BLUE);
+                    }
 
-                        if(MineArr[x][y].number == 2)
-                            pt.setColor(Color.GREEN);
-
-                        if(MineArr[x][y].number == 3)
-                            pt.setColor(Color.YELLOW);
-
-                        if(MineArr[x][y].number >= 4)
+                if (MineArr[x][y].mined && !MineArr[x][y].spotted&& !MineArr[x][y].cover) {
                             pt.setColor(Color.RED);
+                            pt.setStyle(Paint.Style.FILL);
+                            canvas.drawRect(MineArr[x][y].left, MineArr[x][y].top, MineArr[x][y].right, MineArr[x][y].bottom, pt);
+                            pt.setColor(Color.BLACK);
+                            canvas.drawText("M", 0, 1, MineArr[x][y].left + offset / 2, MineArr[x][y].top + offset / 2, pt);
+                            loose();
+                        }
+                if(!MineArr[x][y].mined && !MineArr[x][y].spotted&&!MineArr[x][y].cover){
 
-                        canvas.drawText(String.valueOf(MineArr[x][y].number), 0, 1, MineArr[x][y].left + offset / 2, MineArr[x][y].top + offset / 2, pt);
+                                pt.setColor(Color.GRAY);
+                                pt.setStyle(Paint.Style.FILL);
+                                canvas.drawRect(MineArr[x][y].left, MineArr[x][y].top, MineArr[x][y].right, MineArr[x][y].bottom, pt);
+                                if (MineArr[x][y].number == 1)
+                                    pt.setColor(Color.BLUE);
+
+                                if (MineArr[x][y].number == 2)
+                                    pt.setColor(Color.GREEN);
+
+                                if (MineArr[x][y].number == 3)
+                                    pt.setColor(Color.YELLOW);
+
+                                if (MineArr[x][y].number >= 4)
+                                    pt.setColor(Color.RED);
+
+                                canvas.drawText(String.valueOf(MineArr[x][y].number), 0, 1, MineArr[x][y].left + offset / 2, MineArr[x][y].top + offset / 2, pt);
+
+                        }
                     }
                 }
-            }
 
-    }
+
+
     public boolean onTouchEvent(MotionEvent event)
     {
         if(event.getActionMasked() == MotionEvent.ACTION_DOWN){
@@ -94,11 +108,28 @@ public class cv extends View {
             for (int x = 0; x < 10; x++)
                 for(int y = 0; y < 10; y++)
                 {
-                    if(MineArr[x][y].cover){
+
                         if (((MineArr[x][y].left < touchx)&&(touchx < MineArr[x][y].right))&& ((MineArr[x][y].top < touchy)&&(touchy < MineArr[x][y].bottom))){
-                            MineArr[x][y].cover = false;
+                            if(mode&&MineArr[x][y].cover){
+                                MineArr[x][y].cover = false;
+                            }else{
+                                if(MineArr[x][y].spotted&&!MineArr[x][y].cover)
+                                {
+                                    mine_uncovered--;
+                                    MineArr[x][y].spotted = false;
+                                    MineArr[x][y].cover = true;
+                                }
+                                else if(!MineArr[x][y].spotted&&MineArr[x][y].cover)
+                                {
+                                    mine_uncovered++;
+                                    MineArr[x][y].spotted = true;
+                                    MineArr[x][y].cover = false;
+                                }
+                                MainActivity.update_textview();
+                            }
+
                         }
-                    }
+
                 }
             invalidate();
             return true;
@@ -117,10 +148,12 @@ public class cv extends View {
 
     private void Put_Mine(int nmb)
     {
+        mine_uncovered = 0;
+        MainActivity.update_textview();
         Random rnd = new Random();
         while(nmb != 0) {
-            int x = rnd.nextInt(9);
-            int y = rnd.nextInt(9);
+            int x = rnd.nextInt(10);
+            int y = rnd.nextInt(10);
             if(!MineArr[x][y].mined)
             {
                 MineArr[x][y].mined = true;
@@ -163,5 +196,6 @@ public class cv extends View {
                 MineArr[x][y].cover = true;
 
         init = false;
+        invalidate();
     }
 }
