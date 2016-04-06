@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -92,6 +93,16 @@ public class cv extends View {
                                 if (MineArr[x][y].number >= 4)
                                     pt.setColor(Color.RED);
 
+                                if(MineArr[x][y].number == 0) {
+                                    search_empty(x + 1, y + 1);
+                                    search_empty(x, y + 1);
+                                    search_empty(x + 1, y);
+                                    search_empty(x - 1, y - 1);
+                                    search_empty(x + 1, y - 1);
+                                    search_empty(x, y - 1);
+                                    search_empty(x - 1, y);
+                                    search_empty(x - 1, y + 1);
+                                }
                                 canvas.drawText(String.valueOf(MineArr[x][y].number), 0, 1, MineArr[x][y].left + offset / 2, MineArr[x][y].top + offset / 2, pt);
 
                         }
@@ -197,5 +208,26 @@ public class cv extends View {
 
         init = false;
         invalidate();
+    }
+
+    public void search_empty(int x, int y)
+    {
+        if(is_valid(x,y)&&!MineArr[x][y].mined&&MineArr[x][y].cover&&MineArr[x][y].number ==0){
+            MineArr[x][y].spotted = false;
+            MineArr[x][y].cover = false;
+            search_empty(x+1,y+1);
+            search_empty(x,y+1);
+            search_empty(x+1,y);
+            search_empty(x-1,y-1);
+            search_empty(x+1,y-1);
+            search_empty(x,y-1);
+            search_empty(x-1,y);
+            search_empty(x-1,y+1);
+            invalidate();
+        }
+    }
+    public boolean is_valid(int x, int y)
+    {
+        return !((x < 0) || (x > 9) || (y < 0) || (y > 9));
     }
 }
