@@ -225,6 +225,10 @@ public class cv extends View {
             search_empty(x-1,y+1);
             invalidate();
         }
+        if(is_valid(x,y)&&!MineArr[x][y].mined&&MineArr[x][y].cover)
+        {
+            MineArr[x][y].cover = false;
+        }
     }
     public boolean is_valid(int x, int y)
     {
